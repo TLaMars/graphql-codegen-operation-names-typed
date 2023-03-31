@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "strict": true,
+    "moduleResolution": "node",
+    "types": ["@types/node"]
+  },
+  "include": ["src"]
+}

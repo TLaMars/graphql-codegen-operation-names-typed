@@ -1,0 +1,19 @@
+{
+  "name": "graphql-codegen-operation-names-typed",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "tsc build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@graphql-codegen/plugin-helpers": "^4.0.0",
+    "@graphql-tools/apollo-engine-loader": "^7.3.26",
+    "@types/node": "^18.15.10",
+    "graphql": "^16.6.0",
+    "typescript": "^5.0.2"
+  },
+  "type": "module"
+}
