@@ -21,19 +21,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var graphql_1 = require("graphql");
-function getOperationTypes(node) {
-    var _a, _b;
-    var operationType = upperCase(node.operation);
-    var operationName = upperCase((_b = (_a = node.name) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : "");
-    var operation = operationName + operationType;
-    return {
-        result: operation,
-        variables: operation + "Variables",
-    };
-}
-function upperCase(value) {
-    return value.charAt(0).toUpperCase() + value.slice(1);
-}
+var utils_1 = require("./utils");
 var plugin = function (_, documents, __, ___) {
     var allAst = (0, graphql_1.concatAST)(documents.map(function (v) { return v.document; }));
     var operations = allAst.definitions.filter(function (v) { return v.kind === graphql_1.Kind.OPERATION_DEFINITION; });
@@ -55,21 +43,22 @@ var plugin = function (_, documents, __, ___) {
     var groupedTypeNames = Object.keys(splitOperations).reduce(function (acc, o) {
         var newAcc = __assign({}, acc);
         var operationArray = splitOperations[o];
-        newAcc[o] = operationArray.reduce(function (acc, operation) {
-            var _a;
-            var newAcc = __assign({}, acc);
-            var name = (_a = operation.name) === null || _a === void 0 ? void 0 : _a.value;
-            if (!name) {
+        newAcc[o] =
+            operationArray.reduce(function (acc, operation) {
+                var _a;
+                var newAcc = __assign({}, acc);
+                var name = (_a = operation.name) === null || _a === void 0 ? void 0 : _a.value;
+                if (!name) {
+                    return newAcc;
+                }
+                newAcc[name] = (0, utils_1.getOperationTypes)(operation);
                 return newAcc;
-            }
-            newAcc[name] = getOperationTypes(operation);
-            return newAcc;
-        }, {});
+            }, {});
         return newAcc;
     }, { query: {}, mutation: {}, subscription: {} });
     var types = Object.keys(groupedTypeNames).map(function (key) {
         var typeNames = groupedTypeNames[key];
-        var type = upperCase(key);
+        var type = (0, utils_1.upperCase)(key);
         var strings = Object.keys(typeNames).reduce(function (acc, name) {
             var typeName = typeNames[name];
             var combinedType = " ".concat(name, ": { result: ").concat(typeName.result, "; variables: ").concat(typeName.variables, " }; ");
@@ -82,9 +71,7 @@ var plugin = function (_, documents, __, ___) {
             };
             return newAcc;
         }, { combined: [], results: [], variables: [] });
-        // console.log(strings);
-        return "export type GroupedNamed".concat(type, " = {").concat(strings.combined.join("\n\n"), "}; \n\n      export type TypedNamed").concat(type, "Results = {").concat(strings.results.join("\n\n"), "}; \n\n      export type TypedNamed").concat(type, "Variables = {").concat(strings.variables.join("\n\n"), "}\n    ");
-        // return `export type GroupedNamed${type} = ${JSON.stringify(typeNames)}`;
+        return "export type ".concat(type, "NamesTyped = {").concat(strings.combined.join("\n\n"), "}; \n\n      export type ").concat(type, "ResultNamesTyped = {").concat(strings.results.join("\n\n"), "}; \n\n      export type ").concat(type, "VariablesNamesTyped = {").concat(strings.variables.join("\n\n"), "}\n    ");
     });
     return types.filter(function (r) { return r; }).join("\n\n");
 };
