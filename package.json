@@ -1,18 +1,28 @@
 {
   "name": "graphql-codegen-operation-names-typed",
-  "version": "1.0.2",
-  "description": "",
+  "version": "1.0.4",
+  "description": "GraphQL Codegen plugin to generate operation names typed objects",
+  "keywords": [
+    "graphql",
+    "codegen",
+    "apollo",
+    "typed"
+  ],
   "main": "src/index.js",
   "scripts": {
     "build": "tsc"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Thomas Lamars",
+  "license": "MIT",
   "devDependencies": {
     "@graphql-codegen/plugin-helpers": "^4.0.0",
     "@graphql-tools/apollo-engine-loader": "^7.3.26",
     "@types/node": "^18.15.10",
     "graphql": "^16.6.0",
     "typescript": "^5.0.2"
-  }
+  },
+  "repository": {
+    "url": "https://github.com/TLaMars/graphql-codegen-operation-names-typed"
+  },
+  "homepage": "https://github.com/TLaMars/graphql-codegen-operation-names-typed#readme"
 }

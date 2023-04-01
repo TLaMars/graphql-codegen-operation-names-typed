@@ -12,7 +12,7 @@ npm i graphql
 npm i -D @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/typescript-operations graphql-codegen-operation-names-typed
 ```
 
-## Usage example
+## Example config
 ```typescript
 import type { CodegenConfig } from '@graphql-codegen/cli'
  
@@ -26,4 +26,80 @@ const config: CodegenConfig = {
   }
 }
 export default config
+```
+
+## Usage example
+Lets say we have a hello query that looks as follows
+```gql
+query hello {
+  hello
+}
+```
+
+This will output the types listed below.
+
+```typescript
+export type QueryResultNamesTyped = { 
+  hello: HelloQuery 
+};
+export type QueryVariablesNamesTyped = { 
+  hello: HelloQueryVariables 
+};
+```
+
+### svelte-apollo
+Before you are able to make use the example below make sure you have [@apollo/client](https://www.npmjs.com/package/@apollo/client) and [svelte-apollo](https://github.com/timhall/svelte-apollo) installed and setup according to the documentation.
+
+#### Typed query example
+```typescript
+import { query as svelteApolloQuery } from "svelte-apollo";
+import type { DocumentNode } from "graphql";
+import type {
+  QueryResultNamesTyped,
+  QueryVariablesNamesTyped,
+} from "gql/generated/graphql";
+
+const query = <N extends keyof QueryResultNamesTyped>(
+  documentNode: DocumentNode,
+  variables?: QueryVariablesNamesTyped[N]
+) =>
+  svelteApolloQuery<QueryResultNamesTyped[N], QueryVariablesNamesTyped[N]>(
+    documentNode,
+    {
+      variables,
+      notifyOnNetworkStatusChange: true,
+    }
+  );
+
+export default query;
+```
+
+##### Usage example
+```svelte
+<script lang="ts">
+const result = query<"hello">(helloQuery);
+</script>
+
+<h1>{$result.data?.hello}</h1>
+```
+
+#### Typed mutation example
+```typescript
+import { mutation as svelteApolloMutation } from "svelte-apollo";
+import type { DocumentNode } from "graphql";
+
+import type {
+  MutationResultNamesTyped,
+  MutationVariablesNamesTyped,
+} from "@shared/generated/graphql";
+
+const mutation = <N extends keyof MutationResultNamesTyped>(
+  documentNode: DocumentNode,
+) =>
+  svelteApolloMutation<
+    MutationResultNamesTyped[N],
+    MutationVariablesNamesTyped[N]
+  >(documentNode);
+
+export default mutation;
 ```
